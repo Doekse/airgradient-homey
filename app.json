@@ -1267,6 +1267,39 @@
               "value": true
             },
             {
+              "id": "pm02_uses_corrected",
+              "type": "checkbox",
+              "value": true,
+              "label": {
+                "en": "Use corrected PM 2.5 values",
+                "nl": "Gebruik gecorrigeerde PM 2,5-waarden",
+                "da": "Brug korrigerede PM 2,5-værdier",
+                "de": "Verwenden Sie korrigierte PM 2,5-Werte",
+                "es": "Usar valores corregidos de PM 2.5",
+                "fr": "Utiliser les valeurs corrigées de PM 2,5",
+                "it": "Usa valori corretti di PM 2,5",
+                "no": "Bruk korrigerte PM 2,5-verdier",
+                "sv": "Använd korrigerade PM 2,5-värden",
+                "pl": "Użyj skorygowanych wartości PM 2,5",
+                "ru": "Использовать скорректированные значения PM 2,5",
+                "ko": "보정된 PM 2.5 값 사용"
+              },
+              "hint": {
+                "en": "By enabling this feature the compensated PM 2.5 value from the AirGradient device will be used. When disabled raw measurements will be displayed.",
+                "nl": "Door deze functie in te schakelen, wordt de gecompenseerde PM 2,5-waarde van het AirGradient-apparaat gebruikt. Wanneer uitgeschakeld, worden ruwe metingen weergegeven.",
+                "da": "Ved at aktivere denne funktion bruges den kompenserede PM 2,5-værdi fra AirGradient-enheden. Når deaktiveret, vises rå målinger.",
+                "de": "Durch Aktivieren dieser Funktion wird der kompensierte PM-2,5-Wert vom AirGradient-Gerät verwendet. Wenn deaktiviert, werden Rohmessungen angezeigt.",
+                "es": "Al habilitar esta función, se utilizará el valor compensado de PM 2.5 del dispositivo AirGradient. Cuando está deshabilitado, se mostrarán las mediciones en bruto.",
+                "fr": "En activant cette fonctionnalité, la valeur PM 2,5 compensée de l'appareil AirGradient sera utilisée. Lorsqu'elle est désactivée, les mesures brutes seront affichées.",
+                "it": "Abilitando questa funzione, verrà utilizzato il valore PM 2,5 compensato dal dispositivo AirGradient. Quando disabilitato, verranno visualizzate le misurazioni grezze.",
+                "no": "Ved å aktivere denne funksjonen brukes den kompenserte PM 2,5-verdien fra AirGradient-enheten. Når deaktivert, vises råmålinger.",
+                "sv": "Genom att aktivera denna funktion används det kompenserade PM 2,5-värdet från AirGradient-enheten. När den är inaktiverad visas råa mätningar.",
+                "pl": "Włączając tę funkcję, używana będzie skompensowana wartość PM 2,5 z urządzenia AirGradient. Gdy jest wyłączona, wyświetlane będą surowe pomiary.",
+                "ru": "Включив эту функцию, будет использоваться компенсированное значение PM 2,5 с устройства AirGradient. При отключении будут отображаться необработанные измерения.",
+                "ko": "이 기능을 활성화하면 AirGradient 장치의 보정된 PM 2.5 값이 사용됩니다. 비활성화되면 원시 측정값이 표시됩니다."
+              }
+            },
+            {
               "id": "temperature_uses_corrected",
               "type": "checkbox",
               "value": true,

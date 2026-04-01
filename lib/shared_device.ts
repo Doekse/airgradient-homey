@@ -117,33 +117,17 @@ export default class SharedDevice extends Homey.Device {
         await this.safeUpdateCapabilityValue('measure_co2', aqd.rco2);
         await this.safeUpdateCapabilityValue('measure_pm03_cnt', aqd.pm003Count);
     
-        // Apply PM2.5 correction if enabled
-        let pm02 = aqd.pm02;
-        if (aqd.isIndoor() && this.getSetting('pm02_uses_corrected')) {
-            pm02 = this.calculatePM25(aqd.pm02, aqd.rhum);
-        }
-        await this.safeUpdateCapabilityValue('measure_pm25', pm02);
-    
-        // Temperature correction (only if outdoor & enabled)
-        let temperature = aqd.atmp;
-        if (aqd.isOutdoor() && this.getSetting('temperature_uses_corrected')) {
-            if (temperature < 10) {
-                temperature = (temperature * 1.327) - 6.738;
-            } else {
-                temperature = (temperature * 1.181) - 5.113;
-            }
-        }
-        await this.safeUpdateCapabilityValue('measure_temperature', temperature);
-    
-        // Humidity correction (only if outdoor & enabled)
-        let humidity = aqd.rhum;
-        if (aqd.isOutdoor() && this.getSetting('humidity_uses_corrected')) {
-            humidity = (humidity * 1.259) + 7.34;
-            if (humidity > 100) {
-                humidity = 100;
-            }
-        }
-        await this.safeUpdateCapabilityValue('measure_humidity', humidity);
+        const useCorrectedPm25 = Boolean(this.getSetting('pm02_uses_corrected'));
+        const useCorrectedTemperature = this.getSetting('temperature_uses_corrected') ?? useCorrectedPm25;
+        const useCorrectedHumidity = this.getSetting('humidity_uses_corrected') ?? useCorrectedPm25;
+
+        const pm25Value = useCorrectedPm25 && aqd.pm02Compensated != null ? aqd.pm02Compensated : aqd.pm02;
+        const temperatureValue = useCorrectedTemperature && aqd.atmpCompensated != null ? aqd.atmpCompensated : aqd.atmp;
+        const humidityValue = useCorrectedHumidity && aqd.rhumCompensated != null ? aqd.rhumCompensated : aqd.rhum;
+
+        await this.safeUpdateCapabilityValue('measure_pm25', pm25Value);
+        await this.safeUpdateCapabilityValue('measure_temperature', temperatureValue);
+        await this.safeUpdateCapabilityValue('measure_humidity', humidityValue);
     
         await this.safeUpdateCapabilityValue('measure_voc', aqd.tvocRaw);
         await this.safeUpdateCapabilityValue('measure_voc_idx', aqd.tvocIndex);
@@ -160,40 +144,6 @@ export default class SharedDevice extends Homey.Device {
         }
     }
 
-    calculatePM25(raw: number, rhum: number) {
-        let result = 0;
-
-        if ((raw || raw === 0) && (rhum === undefined || rhum === null)) {
-            return raw;
-        }
-        if (raw < 30) {
-            // AGraw < 30:
-            // PM2.5 = [0.524 x AGraw] – [0.0862 x RH] + 5.75
-            result = (0.524 * raw) - (0.0862 * rhum) + 5.75;
-        } else if (raw < 50) {
-            // 30 ≤ AGraw < 50:
-            // PM2.5 = [0.786 x (AGraw/20 - 3/2) + 0.524 x (1 - (AGraw/20 - 3/2))] x AGraw – [0.0862 x RH] + 5.75
-            result = (0.786 * (raw / 20 - 3 / 2) + 0.524 * (1 - (raw / 20 - 3 / 2))) * raw - (0.0862 * rhum) + 5.75;
-        } else if (raw < 210) {
-            // 50 ≤ AGraw < 210:
-            // PM2.5 = [0.786 x AGraw] – [0.0862 x RH] + 5.75
-            result = (0.786 * raw) - (0.0862 * rhum) + 5.75;
-        } else if (raw < 260) {
-            // 210 ≤ AGraw < 260:
-            // PM2.5 = [0.69 x (AGraw/50 – 21/5) + 0.786 x (1 - (AGraw/50 – 21/5))] x AGraw – [0.0862 x RH x (1 - (AGraw/50 – 21/5))] + [2.966 x (AGraw/50 –21/5)] + [5.75 x (1 - (AGraw/50 – 21/5))] + [8.84 x (10-4) x AGraw^2 x (AGraw/50 – 21/5)]
-            result = (0.69 * (raw / 50 - 21 / 5) + 0.786 * (1 - (raw / 50 - 21 / 5))) * raw
-                - (0.0862 * rhum * (1 - (raw / 50 - 21 / 5)))
-                + (2.966 * (raw / 50 - 21 / 5))
-                + (5.75 * (1 - (raw / 50 - 21 / 5)))
-                + (8.84 * 0.0001 * Math.pow(raw, 2) * (raw / 50 - 21 / 5));
-        } else {
-            // 260 ≤ AGraw:
-            // PM2.5 = 2.966 + [0.69 x AGraw] + [8.84 x 10^-4 x AGraw^2]
-            result = 2.966 + (0.69 * raw) + (8.84 * 0.0001 * Math.pow(raw, 2));
-        }
-
-        return Number(result.toFixed(1));
-    }
 }
 
 module.exports = SharedDevice;
